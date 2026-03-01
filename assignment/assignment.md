@@ -36,7 +36,22 @@ def parse_and_extract_rows(soup: BeautifulSoup):
 Answer:
 
 ```python
-
+import time
+rows = []
+page = 1
+while True:
+    r = requests.get(f"https://www.scrapethissite.com/pages/forms/?page_num={page}")
+    soup = BeautifulSoup(r.text, "html.parser")
+    for row_dict in parse_and_extract_rows(soup):
+        rows.append(row_dict)
+    # Check if the "»" button is disabled (i.e., no more pages to scrape)
+    next_button = soup.find('a', class_='next')
+    if not next_button:
+        break
+    if 'disabled' in next_button.get('class', []):
+        break
+    page += 1
+    time.sleep(1)  # pause for 1 second between requests
 ```
 
 ## Submission
